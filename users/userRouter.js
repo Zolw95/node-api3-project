@@ -1,6 +1,7 @@
 const express = require("express");
 const logger = require("../middleware/logger");
 const userDb = require("./userDb");
+const postDb = require("./postDb");
 
 const router = express.Router();
 
@@ -19,7 +20,15 @@ router.post(
   validatePost(),
   (req, res) => {
     // do your magic!
-    res.status(200).json({ message: "User Id Valid" });
+    postDb
+      .insert(req.body)
+      .then((post) => {
+        res.status(200).json({ postCreated: post });
+      })
+      .catch((err) => {
+        console.log(err.stack);
+        res.status(500).json({ message: "Error posting comment" });
+      });
   }
 );
 
